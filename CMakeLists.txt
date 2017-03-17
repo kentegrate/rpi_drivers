@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rpi_drivers)
+set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -28,6 +29,10 @@ if(HAS_BCM2835)
 
   add_library(ms5611_driver src/ms5611.cpp)
   target_link_libraries(ms5611_driver bcm2835)
+
+  add_library(tb6552_driver src/tb6552.cpp)
+  target_link_libraries(tb6552_driver bcm2835)
+
 else(HAS_BCM2835)
   set(GTEST_ROOT ~/Downloads/googletest-release-1.8.0/)
   include_directories(${GTEST_ROOT}/include/)
@@ -52,16 +57,22 @@ add_executable(pca9685_node src/pca9685_node.cpp)
 target_link_libraries(pca9685_node ${catkin_LIBRARIES})
 add_dependencies(pca9685_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_executable(tb6552_node src/tb6552_node.cpp)
+target_link_libraries(tb6552_node ${catkin_LIBRARIES})
+add_dependencies(tb6552_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 ### Linking 
 if(HAS_BCM2835)
   target_link_libraries(mpu9250_node mpu9250_driver)
   target_link_libraries(ads1115_node ads1115_driver)  
   target_link_libraries(ms5611_node ms5611_driver)
   target_link_libraries(pca9685_node pca9685_driver)
+  target_link_libraries(tb6552_node tb6552_driver)
 else(HAS_BCM2835)
   target_link_libraries(mpu9250_node gmock pthread)
   target_link_libraries(ads1115_node gmock pthread) 
   target_link_libraries(ms5611_node gmock pthread)
   target_link_libraries(pca9685_node gmock pthread)
+  target_link_libraries(tb6552_node gmock pthread)
 endif(HAS_BCM2835)
 
