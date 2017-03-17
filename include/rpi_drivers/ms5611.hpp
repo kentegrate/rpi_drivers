@@ -82,11 +82,33 @@ class MS5611 {
   virtual float getTemperature() = 0;
   virtual float getPressure() = 0;
 
+};
+
+class MS5611Impl : public MS5611{
+ public:
+  char WriteReg(uint8_t WriteAddr, char WriteData);
+  char ReadReg(uint8_t WriteAddr);
+  void  ReadRegs(uint8_t ReadAddr, char *ReadBuf, unsigned int Bytes);
+  void initialize();
+  bool testConnection();
+
+  void refreshPressure(uint8_t OSR = MS5611_RA_D1_OSR_4096);
+  void readPressure();
+
+  void refreshTemperature(uint8_t OSR = MS5611_RA_D2_OSR_4096);
+  void readTemperature();
+
+  void calculatePressureAndTemperature();
+  void update();
+  float getTemperature();
+  float getPressure();
+
  private:
   uint16_t C1, C2, C3, C4, C5, C6; // Calibration data
   uint32_t D1, D2; // Raw measurement data
   float TEMP; // Calculated temperature
   float PRES; // Calculated pressure
+
 };
 
 #endif // MS5611_HPP

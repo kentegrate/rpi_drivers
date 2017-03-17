@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #define MS5611_PIN BCM2835_SPI_CS0
 
-char MS5611::WriteReg(uint8_t WriteAddr, char WriteData){
+char MS5611Impl::WriteReg(uint8_t WriteAddr, char WriteData){
 
   char buff[2];
   buff[0] = WriteAddr;
@@ -48,14 +48,14 @@ char MS5611::WriteReg(uint8_t WriteAddr, char WriteData){
 
 //-----------------------------------------------------------------------------------------------
 
-char MS5611::ReadReg( uint8_t WriteAddr)
+char MS5611Impl::ReadReg( uint8_t WriteAddr)
 {
   return WriteReg(WriteAddr, 0x00);
  }
 
 //-----------------------------------------------------------------------------------------------
 
-void MS5611::ReadRegs( uint8_t ReadAddr, char *ReadBuf, unsigned int Bytes )
+void MS5611Impl::ReadRegs( uint8_t ReadAddr, char *ReadBuf, unsigned int Bytes )
 {
   char buff[1+Bytes];
   buff[0] = ReadAddr;
@@ -72,7 +72,7 @@ void MS5611::ReadRegs( uint8_t ReadAddr, char *ReadBuf, unsigned int Bytes )
 /** Power on and prepare for general usage.
  * This method reads coefficients stored in PROM.
  */
-void MS5611::initialize() {
+void MS5611Impl::initialize() {
   if (!bcm2835_init())
     {
       printf("bcm2835_init failed. Are you running as root??\n");
@@ -109,7 +109,7 @@ void MS5611::initialize() {
 /** Verify the SPI connection.
  * @return True if connection is valid, false otherwise
  */
-bool MS5611::testConnection() {
+bool MS5611Impl::testConnection() {
   char data;
   int8_t status = ReadReg(MS5611_RA_C0);
   if (status > 0)
@@ -122,14 +122,14 @@ bool MS5611::testConnection() {
  * @param OSR value
  * @see MS5611_RA_D1_OSR_4096
  */
-void MS5611::refreshPressure(uint8_t OSR) {
+void MS5611Impl::refreshPressure(uint8_t OSR) {
   WriteReg(OSR,0);
   //  I2Cdev::writeBytes(devAddr, OSR, 0, 0);
 }
 
 /** Read pressure value
  */
-void MS5611::readPressure() {
+void MS5611Impl::readPressure() {
   //
   char buffer[3];
   ReadRegs(MS5611_RA_ADC, buffer, 3);
@@ -140,14 +140,14 @@ void MS5611::readPressure() {
  * @param OSR value
  * @see MS5611_RA_D2_OSR_4096
  */
- void MS5611::refreshTemperature(uint8_t OSR) {
+ void MS5611Impl::refreshTemperature(uint8_t OSR) {
   WriteReg(OSR,0);
   //  I2Cdev::writeBytes(devAddr, OSR, 0, 0);
 }
 
 /** Read temperature value
  */
-void MS5611::readTemperature() {
+void MS5611Impl::readTemperature() {
   char buffer[3];
   ReadRegs(MS5611_RA_ADC, buffer, 3);
   D2 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2];
@@ -156,7 +156,7 @@ void MS5611::readTemperature() {
 /** Calculate temperature and pressure calculations and perform compensation
  *  More info about these calculations is available in the datasheet.
  */
-void MS5611::calculatePressureAndTemperature() {
+void MS5611Impl::calculatePressureAndTemperature() {
   float dT = D2 - C5 * pow(2, 8);
   TEMP = (2000 + ((dT * C6) / pow(2, 23)));
   float OFF = C2 * pow(2, 16) + (C4 * dT) / pow(2, 7);
@@ -194,7 +194,7 @@ void MS5611::calculatePressureAndTemperature() {
 /** Perform pressure and temperature reading and calculation at once.
  *  Contains sleeps, better perform operations separately.
  */
-void MS5611::update() {
+void MS5611Impl::update() {
   refreshPressure();
   usleep(10000); // Waiting for pressure data ready
   readPressure();
@@ -209,13 +209,13 @@ void MS5611::update() {
 /** Get calculated temperature value
  @return Temperature in degrees of Celsius
 */
-float MS5611::getTemperature() {
+float MS5611Impl::getTemperature() {
   return TEMP;
 }
 
 /** Get calculated pressure value
  @return Pressure in millibars
 */
-float MS5611::getPressure() {
+float MS5611Impl::getPressure() {
   return PRES;
 }

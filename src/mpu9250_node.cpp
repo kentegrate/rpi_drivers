@@ -3,7 +3,7 @@
 
 #ifdef HAS_BCM2835
   #include <rpi_drivers/mpu9250.hpp>
-  MPU9250 mpu;
+  MPU9250Impl mpu;
 #else
   #include <rpi_drivers/mock_mpu9250.hpp>
   MockMPU9250 mpu;  

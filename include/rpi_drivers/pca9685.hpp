@@ -77,7 +77,7 @@ class PCA9685 {
   virtual uint8_t writeBit(uint8_t regAddr, uint8_t bitNum, char data) = 0;
 
   virtual void initialize(int address) = 0;
-  virtual void finalize() = 0;
+  virtual void finalize(int enable_pin) = 0;
   virtual bool testConnection() = 0;
 
   virtual void enableOutput(int enable_pin) = 0;
@@ -99,8 +99,41 @@ class PCA9685 {
   virtual void setAllPWMmS(float length_mS) = 0;
   virtual void setAllPWMuS(float length_uS) = 0;
 
+};
+
+class PCA9685Impl : public PCA9685{
+ public:
+  uint8_t writeByte(uint8_t regAddr, char *data);
+  uint8_t writeBytes(uint8_t regAddr, char *data, uint32_t bytes);
+  uint8_t readByte(uint8_t regAddr, char *data);
+  uint8_t writeBit(uint8_t regAddr, uint8_t bitNum, char data);
+
+  void initialize(int address);
+  void finalize(int enable_pin);
+  bool testConnection();
+
+  void enableOutput(int enable_pin);
+  void disableOutput(int enable_pin);
+
+  float getFrequency();
+  void setFrequency(float frequency);
+
+  void sleep();
+  void restart();
+
+  void setPWM(uint8_t channel, uint16_t offset, uint16_t length);
+  void setPWM(uint8_t channel, uint16_t length);
+  void setPWMmS(uint8_t channel, float length_mS);
+  void setPWMuS(uint8_t channel, float length_uS);
+
+  void setAllPWM(uint16_t offset, uint16_t length);
+  void setAllPWM(uint16_t length);
+  void setAllPWMmS(float length_mS);
+  void setAllPWMuS(float length_uS);
+
  private:
   float frequency;
+
 };
 
 #endif // PCA9685_ HPP

@@ -36,6 +36,35 @@ class MPU9250 {
   virtual void getMotion9(float *ax, float *ay, float *az, float *gx, float *gy, float *gz, float *mx, float *my, float *mz) = 0;
   virtual void getMotion6(float *ax, float *ay, float *az, float *gx, float *gy, float *gz) = 0;
 
+};
+class MPU9250Impl : public MPU9250{
+
+ public:
+  bool initialize(int sample_rate_div = 1, int low_pass_filter = 0x01);
+  bool testConnection();
+
+  char WriteReg( uint8_t WriteAddr, char WriteData );
+  char ReadReg( uint8_t WriteAddr);
+  void ReadRegs( uint8_t ReadAddr, char *ReadBuf, unsigned int Bytes );
+
+  unsigned int set_gyro_scale(int scale);
+  unsigned int set_acc_scale(int scale);
+
+  void calib_acc();
+  void calib_mag();
+
+  void read_temp();
+  void read_acc();
+  void read_gyro();
+  void read_mag();
+  void read_all();
+
+  unsigned int whoami();
+  uint8_t AK8963_whoami();
+
+  void getMotion9(float *ax, float *ay, float *az, float *gx, float *gy, float *gz, float *mx, float *my, float *mz);
+  void getMotion6(float *ax, float *ay, float *az, float *gx, float *gy, float *gz);
+
  public:
   float acc_divider;
   float gyro_divider;
@@ -47,9 +76,9 @@ class MPU9250 {
   float accelerometer_data[3];
   float gyroscope_data[3];
   float magnetometer_data[3];
-
- private:
+private:
   float _error;
+  
 };
 
 #endif //_MPU9250_H

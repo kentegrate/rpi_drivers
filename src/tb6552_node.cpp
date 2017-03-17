@@ -3,7 +3,7 @@
 #include <std_msgs/UInt16.h>
 #ifdef HAS_BCM2835
 #include <rpi_drivers/tb6552.hpp>
-TB6552 tb6552;
+TB6552Impl tb6552;
 #else
 #include <rpi_drivers/mock_tb6552.hpp>
 MockTB6552 tb6552;

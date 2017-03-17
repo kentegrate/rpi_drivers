@@ -13,8 +13,8 @@ class MockPCA9685 : public PCA9685 {
       uint8_t(uint8_t regAddr, uint8_t bitNum, char data));
   MOCK_METHOD1(initialize,
       void(int address));
-  MOCK_METHOD0(finalize,
-      void());
+  MOCK_METHOD1(finalize,
+      void(int enable_pin));
   MOCK_METHOD0(testConnection,
       bool());
   MOCK_METHOD1(enableOutput,

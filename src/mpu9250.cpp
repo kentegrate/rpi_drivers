@@ -18,7 +18,7 @@ https://github.com/emlid/Navio/blob/master/C%2B%2B/Navio/MPU9250.cpp*/
 usage: use these methods to read and write MPU9250 registers over SPI
 -----------------------------------------------------------------------------------------------*/
 
-char MPU9250::WriteReg( uint8_t WriteAddr,char WriteData )
+char MPU9250Impl::WriteReg( uint8_t WriteAddr,char WriteData )
 {
   unsigned int recieved;
 
@@ -33,7 +33,7 @@ char MPU9250::WriteReg( uint8_t WriteAddr,char WriteData )
 
 //-----------------------------------------------------------------------------------------------
 
-char MPU9250::ReadReg( uint8_t WriteAddr)
+char MPU9250Impl::ReadReg( uint8_t WriteAddr)
 {
   return WriteReg(WriteAddr | READ_FLAG, 0x00);
   
@@ -41,7 +41,7 @@ char MPU9250::ReadReg( uint8_t WriteAddr)
 
 //-----------------------------------------------------------------------------------------------
 
-void MPU9250::ReadRegs( uint8_t ReadAddr, char *ReadBuf, unsigned int Bytes )
+void MPU9250Impl::ReadRegs( uint8_t ReadAddr, char *ReadBuf, unsigned int Bytes )
 {
 
   char buff[1+Bytes];
@@ -64,7 +64,7 @@ usage: call this function to know if SPI and MPU9250 are working correctly.
 returns true if mpu9250 answers
 -----------------------------------------------------------------------------------------------*/
 
-bool MPU9250::testConnection()
+bool MPU9250Impl::testConnection()
 {
   unsigned int response;
   response=ReadReg(MPUREG_WHOAMI);
@@ -93,7 +93,7 @@ returns 1 if an error occurred
 
 #define MPU_InitRegNum 16
 
-bool MPU9250::initialize(int sample_rate_div, int low_pass_filter)
+bool MPU9250Impl::initialize(int sample_rate_div, int low_pass_filter)
 {
   if (!bcm2835_init())
     {
@@ -163,7 +163,7 @@ BITS_FS_16G
 returns the range set (2,4,8 or 16)
 -----------------------------------------------------------------------------------------------*/
 
-unsigned int MPU9250::set_acc_scale(int scale)
+unsigned int MPU9250Impl::set_acc_scale(int scale)
 {
   unsigned int temp_scale;
   WriteReg(MPUREG_ACCEL_CONFIG, scale);
@@ -213,7 +213,7 @@ BITS_FS_2000DPS
 returns the range set (250,500,1000 or 2000)
 -----------------------------------------------------------------------------------------------*/
 
-unsigned int MPU9250::set_gyro_scale(int scale)
+unsigned int MPU9250Impl::set_gyro_scale(int scale)
 {
   unsigned int temp_scale;
   WriteReg(MPUREG_GYRO_CONFIG, scale);
@@ -257,7 +257,7 @@ mpu9250 which should be 104 when in SPI mode.
 returns the I2C address (104)
 -----------------------------------------------------------------------------------------------*/
 
-unsigned int MPU9250::whoami()
+unsigned int MPU9250Impl::whoami()
 {
   unsigned int response;
   response=ReadReg(MPUREG_WHOAMI);
@@ -273,7 +273,7 @@ usage: call this function to read accelerometer data. Axis represents selected a
 2 -> Z axis
 -----------------------------------------------------------------------------------------------*/
 
-void MPU9250::read_acc()
+void MPU9250Impl::read_acc()
 {
   char response[6];
   int16_t bit_data;
@@ -296,7 +296,7 @@ usage: call this function to read gyroscope data. Axis represents selected axis:
 2 -> Z axis
 -----------------------------------------------------------------------------------------------*/
 
-void MPU9250::read_gyro()
+void MPU9250Impl::read_gyro()
 {
   char response[6];
   int16_t bit_data;
@@ -317,7 +317,7 @@ usage: call this function to read temperature data.
 returns the value in °C
 -----------------------------------------------------------------------------------------------*/
 
-void MPU9250::read_temp()
+void MPU9250Impl::read_temp()
 {
   char response[2];
   int16_t bit_data;
@@ -338,7 +338,7 @@ usage: call this function to read accelerometer data. Axis represents selected a
 returns Factory Trim value
 -----------------------------------------------------------------------------------------------*/
 
-void MPU9250::calib_acc()
+void MPU9250Impl::calib_acc()
 {
   char response[4];
   int temp_scale;
@@ -358,7 +358,7 @@ void MPU9250::calib_acc()
 
 //-----------------------------------------------------------------------------------------------
 
-uint8_t MPU9250::AK8963_whoami(){
+uint8_t MPU9250Impl::AK8963_whoami(){
   char response;
   WriteReg(MPUREG_I2C_SLV0_ADDR,AK8963_I2C_ADDR|READ_FLAG); //Set the I2C slave addres of AK8963 and set for read.
   WriteReg(MPUREG_I2C_SLV0_REG, AK8963_WIA); //I2C slave 0 register address from where to begin data transfer
@@ -375,7 +375,7 @@ uint8_t MPU9250::AK8963_whoami(){
 
 //-----------------------------------------------------------------------------------------------
 
-void MPU9250::calib_mag(){
+void MPU9250Impl::calib_mag(){
   char response[3];
   float data;
   int i;
@@ -398,7 +398,7 @@ void MPU9250::calib_mag(){
 
 //-----------------------------------------------------------------------------------------------
 
-void MPU9250::read_mag(){
+void MPU9250Impl::read_mag(){
   char response[7];
   int16_t bit_data;
   float data;
@@ -420,7 +420,7 @@ void MPU9250::read_mag(){
 
 //-----------------------------------------------------------------------------------------------
 
-void MPU9250::read_all(){
+void MPU9250Impl::read_all(){
   char response[21];
   int16_t bit_data;
   float data;
@@ -464,7 +464,7 @@ usage: call this functions to read and get values
 returns accel, gyro and mag values
 -----------------------------------------------------------------------------------------------*/
 
-void MPU9250::getMotion9(float *ax, float *ay, float *az, float *gx, float *gy, float *gz, float *mx, float *my, float *mz)
+void MPU9250Impl::getMotion9(float *ax, float *ay, float *az, float *gx, float *gy, float *gz, float *mx, float *my, float *mz)
 {
   read_all();
   *ax = accelerometer_data[0];
@@ -480,7 +480,7 @@ void MPU9250::getMotion9(float *ax, float *ay, float *az, float *gx, float *gy, 
 
 //-----------------------------------------------------------------------------------------------
 
-void MPU9250::getMotion6(float *ax, float *ay, float *az, float *gx, float *gy, float *gz)
+void MPU9250Impl::getMotion6(float *ax, float *ay, float *az, float *gx, float *gy, float *gz)
 {
   read_acc();
   read_gyro();

@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 https://github.com/emlid/Navio/blob/master/C%2B%2B/Navio/PCA9685.cpp
  */
 
-#include <rcopter_drivers/pca9685.hpp>
+#include <rpi_drivers/pca9685.hpp>
 #include <bcm2835.h>
 #include <string.h>
 
@@ -38,9 +38,7 @@ https://github.com/emlid/Navio/blob/master/C%2B%2B/Navio/PCA9685.cpp
  * @see PCA9685_DEFAULT_ADDRESS
  */
 
-PCA9685::~PCA9685(){
-}
-uint8_t PCA9685::writeByte(uint8_t regAddr, char *data){
+uint8_t PCA9685Impl::writeByte(uint8_t regAddr, char *data){
   char send_data[2];
   send_data[0] = regAddr;
   send_data[1] = *data;
@@ -48,7 +46,7 @@ uint8_t PCA9685::writeByte(uint8_t regAddr, char *data){
   //  bcm2835_i2c_setSlaveAddress(address);
   return bcm2835_i2c_write(&send_data[0],2);
 }
-uint8_t PCA9685::writeBytes(uint8_t regAddr, char *data, uint32_t bytes){
+uint8_t PCA9685Impl::writeBytes(uint8_t regAddr, char *data, uint32_t bytes){
   char send_data[1+bytes];
   send_data[0]=regAddr;
   memcpy(send_data+1,data,bytes);
@@ -57,7 +55,7 @@ uint8_t PCA9685::writeBytes(uint8_t regAddr, char *data, uint32_t bytes){
   
   return bcm2835_i2c_write(send_data,bytes+1);
 }
-uint8_t PCA9685::readByte(uint8_t regAddr, char *data){
+uint8_t PCA9685Impl::readByte(uint8_t regAddr, char *data){
   char read_data = 0x00;
   ///  writeByte(regAddr,&read_data);
   char reg = regAddr;
@@ -66,7 +64,7 @@ uint8_t PCA9685::readByte(uint8_t regAddr, char *data){
   return bcm2835_i2c_read(data,1);
    
 }
-uint8_t PCA9685::writeBit(uint8_t regAddr, uint8_t bitNum, char data){
+uint8_t PCA9685Impl::writeBit(uint8_t regAddr, uint8_t bitNum, char data){
   char b;
   readByte(regAddr,&b);
   b = (data!=0) ? (b | (1<<bitNum)) : (b & ~(1 <<bitNum));
@@ -78,7 +76,7 @@ uint8_t PCA9685::writeBit(uint8_t regAddr, uint8_t bitNum, char data){
  * Then it enables auto-increment of register address to allow for faster writes.
  * And finally the restart is performed to enable clocking.
  */
-void PCA9685::initialize(int address) {
+void PCA9685Impl::initialize(int address) {
 
   if (!bcm2835_init())
     {
@@ -102,8 +100,8 @@ void PCA9685::initialize(int address) {
   restart();
 }
 
-void PCA9685::finalize(){
-  disableOutput();
+void PCA9685Impl::finalize(int enable_pin){
+  disableOutput(enable_pin);
   bcm2835_i2c_end();
   bcm2835_close();
 }
@@ -111,7 +109,7 @@ void PCA9685::finalize(){
 /** Verify the I2C connection.
  * @return True if connection is valid, false otherwise
  */
-bool PCA9685::testConnection() {
+bool PCA9685Impl::testConnection() {
   char data;
   int8_t status = readByte(PCA9685_RA_PRE_SCALE, &data);
   if (status == BCM2835_I2C_REASON_OK)
@@ -122,21 +120,21 @@ bool PCA9685::testConnection() {
 
 /** Enable PWM output on PXF Mini
  **/
-void PCA9685::enableOutput(int enable_pin){
+void PCA9685Impl::enableOutput(int enable_pin){
   bcm2835_gpio_fsel(enable_pin, BCM2835_GPIO_FSEL_OUTP);
   bcm2835_gpio_write(enable_pin, LOW);
 }
 
 /** Disable PWM output on PXF Mini
  **/
-void PCA9685::disableOutput(int enable_pin){
+void PCA9685Impl::disableOutput(int enable_pin){
   bcm2835_gpio_write(enable_pin,HIGH);  
 }
 
 /** Put PCA9685 to sleep mode thus turning off the outputs.
  * @see PCA9685_MODE1_SLEEP_BIT
  */
-void PCA9685::sleep() {
+void PCA9685Impl::sleep() {
   writeBit(PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT, 1);
 }
 
@@ -144,7 +142,7 @@ void PCA9685::sleep() {
  * @see PCA9685_MODE1_SLEEP_BIT
  * @see PCA9685_MODE1_RESTART_BIT
  */
-void PCA9685::restart() {
+void PCA9685Impl::restart() {
   char data_1 = (1 << PCA9685_MODE1_SLEEP_BIT);
   writeByte(PCA9685_RA_MODE1, &data_1);
   char data_2 = ((1 << PCA9685_MODE1_SLEEP_BIT) | (1 << PCA9685_MODE1_EXTCLK_BIT));
@@ -157,7 +155,7 @@ void PCA9685::restart() {
  * @return Frequency in Hz
  * @see PCA9685_RA_PRE_SCALE
  */
-float PCA9685::getFrequency() {
+float PCA9685Impl::getFrequency() {
   char data;
   readByte(PCA9685_RA_PRE_SCALE, &data);
   return 24576000.f / 4096.f / (data + 1);
@@ -168,7 +166,7 @@ float PCA9685::getFrequency() {
  * @param Frequency in Hz
  * @see PCA9685_RA_PRE_SCALE
  */
-void PCA9685::setFrequency(float frequency) {
+void PCA9685Impl::setFrequency(float frequency) {
   sleep();
   usleep(10000);
   char prescale = roundf(24576000.f / 4096.f / frequency)  - 1;
@@ -183,7 +181,7 @@ void PCA9685::setFrequency(float frequency) {
  * @param Length (0-4095)
  * @see PCA9685_RA_LED0_ON_L
  */
-void PCA9685::setPWM(uint8_t channel, uint16_t offset, uint16_t length) {
+void PCA9685Impl::setPWM(uint8_t channel, uint16_t offset, uint16_t length) {
   char data[4] = {0, 0, 0, 0};
   if(length == 0) {
     data[3] = 0x10;
@@ -203,7 +201,7 @@ void PCA9685::setPWM(uint8_t channel, uint16_t offset, uint16_t length) {
  * @param Length (0-4095)
  * @see PCA9685_RA_LED0_ON_L
  */
-void PCA9685::setPWM(uint8_t channel, uint16_t length) {
+void PCA9685Impl::setPWM(uint8_t channel, uint16_t length) {
   setPWM(channel, 0, length);
 }
 
@@ -212,7 +210,7 @@ void PCA9685::setPWM(uint8_t channel, uint16_t length) {
  * @param Length in milliseconds
  * @see PCA9685_RA_LED0_ON_L
  */
-void PCA9685::setPWMmS(uint8_t channel, float length_mS) {
+void PCA9685Impl::setPWMmS(uint8_t channel, float length_mS) {
   setPWM(channel, round((length_mS * 4096.f) / (1000.f / frequency)));
 }
 
@@ -221,7 +219,7 @@ void PCA9685::setPWMmS(uint8_t channel, float length_mS) {
  * @param Length in microseconds
  * @see PCA9685_RA_LED0_ON_L
  */
-void PCA9685::setPWMuS(uint8_t channel, float length_uS) {
+void PCA9685Impl::setPWMuS(uint8_t channel, float length_uS) {
   setPWM(channel, round((length_uS * 4096.f) / (1000000.f / frequency)));
 }
 
@@ -230,7 +228,7 @@ void PCA9685::setPWMuS(uint8_t channel, float length_uS) {
  * @param Length (0-4095)
  * @see PCA9685_RA_ALL_LED_ON_L
  */
-void PCA9685::setAllPWM(uint16_t offset, uint16_t length) {
+void PCA9685Impl::setAllPWM(uint16_t offset, uint16_t length) {
   char data[4] = {offset & 0xFF, offset >> 8, length & 0xFF, length >> 8};
   writeBytes(PCA9685_RA_ALL_LED_ON_L,data,4);
 }
@@ -239,7 +237,7 @@ void PCA9685::setAllPWM(uint16_t offset, uint16_t length) {
  * @param Length (0-4095)
  * @see PCA9685_RA_ALL_LED_ON_L
  */
-void PCA9685::setAllPWM(uint16_t length) {
+void PCA9685Impl::setAllPWM(uint16_t length) {
   setAllPWM(0, length);
 }
 
@@ -247,7 +245,7 @@ void PCA9685::setAllPWM(uint16_t length) {
  * @param Length in milliseconds
  * @see PCA9685_RA_ALL_LED_ON_L
  */
-void PCA9685::setAllPWMmS(float length_mS) {
+void PCA9685Impl::setAllPWMmS(float length_mS) {
   setAllPWM(round((length_mS * 4096.f) / (1000.f / frequency)));
 }
 
@@ -255,6 +253,6 @@ void PCA9685::setAllPWMmS(float length_mS) {
  * @param Length in microseconds
  * @see PCA9685_RA_ALL_LED_ON_L
  */
-void PCA9685::setAllPWMuS(float length_uS) {
+void PCA9685Impl::setAllPWMuS(float length_uS) {
   setAllPWM(round((length_uS * 4096.f) / (1000000.f / frequency)));
 }

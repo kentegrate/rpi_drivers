@@ -4,7 +4,7 @@
 #include <std_msgs/Float32.h>
 #ifdef HAS_BCM2835
   #include <rpi_drivers/pca9685.hpp>
-  PCA9685 pca9685;
+  PCA9685Impl pca9685;
 #else
   #include <rpi_drivers/mock_pca9685.hpp>
   MockPCA9685 pca9685;
@@ -48,6 +48,6 @@ int main(int argc, char* argv[]){
 
   ros::spin();
 
-  pca9685.finalize();
+  pca9685.finalize(enable_pin);
   return 0;
 }

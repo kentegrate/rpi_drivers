@@ -141,7 +141,37 @@ class ADS1115 {
   virtual void setComparatorLatchEnabled(uint16_t latchStatus) = 0;
   virtual void setComparatorQueueMode(uint16_t queueMode) = 0;
 
- private:
+};
+
+class ADS1115Impl : public ADS1115{
+ public:
+  void initialize();
+
+  bool testConnection();
+
+  int16_t getConversion();
+
+  void setOpStatus(uint16_t op);
+
+  uint16_t getMultiplexer();
+  void setMultiplexer(uint16_t mux);
+
+  uint16_t getGain();
+  void setGain(uint16_t gain);
+
+  uint16_t getMode();
+  void setMode(uint16_t mode);
+
+  uint16_t getRate();
+  void setRate(uint16_t rate);
+
+  float getMilliVolts();
+
+  void setComparatorMode(uint16_t comparatorMode);
+  void setComparatorPolarity(uint16_t polarit);
+  void setComparatorLatchEnabled(uint16_t latchStatus);
+  void setComparatorQueueMode(uint16_t queueMode);
+private:
   void updateConfigRegister();
 
   uint8_t address;
@@ -159,6 +189,7 @@ class ADS1115 {
   } config;
 
   void showConfigRegister();
+
 };
 
 #endif /* _ADS1115_H_ */

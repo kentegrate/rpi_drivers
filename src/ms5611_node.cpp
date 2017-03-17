@@ -4,7 +4,7 @@
 
 #ifdef HAS_BCM2835
   #include <rpi_drivers/ms5611.hpp>
-  MS5611 ms5611;
+  MS5611Impl ms5611;
 #else
   #include <rpi_drivers/mock_ms5611.hpp>
   MockMS5611 ms5611;

@@ -4,7 +4,7 @@
 
 #ifdef HAS_BCM2835
   #include <rpi_drivers/ads1115.hpp>
-  ADS1115 adc;
+  ADS1115Impl adc;
 #else
   #include <rpi_drivers/mock_ads1115.hpp>
   MockADS1115 adc;

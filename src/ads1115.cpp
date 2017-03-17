@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Default mode is singleshot
  * @param address
  */
-ADS1115::initialize(uint8_t address) {
+void ADS1115Impl::initialize(){
   this->address = ADS1115_DEFAULT_ADDRESS;
   memset(&config, 0, sizeof(config));
   setGain(ADS1115_PGA_4P096);
@@ -52,7 +52,7 @@ ADS1115::initialize(uint8_t address) {
 /** Verify the I2C connection.
  * @return True if connection is valid, false otherwise
  */
-bool ADS1115::testConnection() {
+bool ADS1115Impl::testConnection() {
   uint8_t data;
   int8_t status = I2Cdev::readByte(address, ADS1115_RA_CONFIG, &data);
   if (status > 0)
@@ -64,7 +64,7 @@ bool ADS1115::testConnection() {
 /**
  * @brief Call it if you updated ConfigRegister
  */
-void ADS1115::updateConfigRegister() {
+void ADS1115Impl::updateConfigRegister() {
   uint16_t c;
 
   /* New config */
@@ -82,7 +82,7 @@ void ADS1115::updateConfigRegister() {
  *
  * @return Little-Endian result
  */
-int16_t ADS1115::getConversion() {
+int16_t ADS1115Impl::getConversion() {
   union {
     uint16_t w;
     uint8_t b[2];
@@ -111,7 +111,7 @@ int16_t ADS1115::getConversion() {
  *
  * @param Desired Status
  */
-void ADS1115::setOpStatus(uint16_t status) {
+void ADS1115Impl::setOpStatus(uint16_t status) {
   config.status = status;
   updateConfigRegister();
 }
@@ -121,7 +121,7 @@ void ADS1115::setOpStatus(uint16_t status) {
  *
  * @return Multiplexer status
  */
-uint16_t ADS1115::getMultiplexer() {
+uint16_t ADS1115Impl::getMultiplexer() {
   return config.mux;
 }
 
@@ -130,7 +130,7 @@ uint16_t ADS1115::getMultiplexer() {
  *
  * @param Desired multiplexer
  */
-void ADS1115::setMultiplexer(uint16_t mux) {
+void ADS1115Impl::setMultiplexer(uint16_t mux) {
   if (config.mux != mux) {
     config.mux = mux;
     updateConfigRegister();
@@ -142,7 +142,7 @@ void ADS1115::setMultiplexer(uint16_t mux) {
  *
  * @return Current Gain
  */
-uint16_t ADS1115::getGain() {
+uint16_t ADS1115Impl::getGain() {
   return config.gain;
 }
 
@@ -151,7 +151,7 @@ uint16_t ADS1115::getGain() {
  *
  * @param gain
  */
-void ADS1115::setGain(uint16_t gain) {
+void ADS1115Impl::setGain(uint16_t gain) {
   if (config.gain != gain) {
     config.gain = gain;
     updateConfigRegister();
@@ -163,7 +163,7 @@ void ADS1115::setGain(uint16_t gain) {
  *
  * @return mode
  */
-uint16_t ADS1115::getMode() {
+uint16_t ADS1115Impl::getMode() {
   return config.mode;
 }
 
@@ -172,7 +172,7 @@ uint16_t ADS1115::getMode() {
  *
  * @param mode
  */
-void ADS1115::setMode(uint16_t mode) {
+void ADS1115Impl::setMode(uint16_t mode) {
   if (config.mode != mode) {
     config.mode = mode;
     updateConfigRegister();
@@ -184,7 +184,7 @@ void ADS1115::setMode(uint16_t mode) {
  *
  * @return rate
  */
-uint16_t ADS1115::getRate() {
+uint16_t ADS1115Impl::getRate() {
   return config.rate;
 }
 
@@ -193,7 +193,7 @@ uint16_t ADS1115::getRate() {
  *
  * @param rate
  */
-void ADS1115::setRate(uint16_t rate) {
+void ADS1115Impl::setRate(uint16_t rate) {
   if (config.rate != rate) {
     config.rate = rate;
     updateConfigRegister();
@@ -203,7 +203,7 @@ void ADS1115::setRate(uint16_t rate) {
 /**
  * @brief Show content of config register
  */
-void ADS1115::showConfigRegister() {
+void ADS1115Impl::showConfigRegister() {
   union {
     uint16_t w;
     uint8_t b[2];
@@ -219,7 +219,7 @@ void ADS1115::showConfigRegister() {
  *
  * @return Last conversion in mV
  */
-float ADS1115::getMilliVolts() {
+float ADS1115Impl::getMilliVolts() {
   switch (config.gain) {
   case ADS1115_PGA_6P144:
     return (getConversion() * ADS1115_MV_6P144);
@@ -253,7 +253,7 @@ float ADS1115::getMilliVolts() {
  *
  * @param comparator
  */
-void ADS1115::setComparatorMode(uint16_t comparator) {
+void ADS1115Impl::setComparatorMode(uint16_t comparator) {
   if (config.comparator != comparator) {
     config.comparator = comparator;
     updateConfigRegister();
@@ -265,7 +265,7 @@ void ADS1115::setComparatorMode(uint16_t comparator) {
  *
  * @param polarity
  */
-void ADS1115::setComparatorPolarity(uint16_t polarity) {
+void ADS1115Impl::setComparatorPolarity(uint16_t polarity) {
   if (config.polarity != polarity) {
     config.polarity = polarity;
     updateConfigRegister();
@@ -277,7 +277,7 @@ void ADS1115::setComparatorPolarity(uint16_t polarity) {
  *
  * @param latch
  */
-void ADS1115::setComparatorLatchEnabled(uint16_t latch) {
+void ADS1115Impl::setComparatorLatchEnabled(uint16_t latch) {
   if (config.latch != latch) {
     config.latch = latch;
     updateConfigRegister();
@@ -289,7 +289,7 @@ void ADS1115::setComparatorLatchEnabled(uint16_t latch) {
  *
  * @param queue
  */
-void ADS1115::setComparatorQueueMode(uint16_t queue) {
+void ADS1115Impl::setComparatorQueueMode(uint16_t queue) {
   if (config.queue != queue) {
     config.queue = queue;
     updateConfigRegister();
