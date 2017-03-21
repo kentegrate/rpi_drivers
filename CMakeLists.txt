@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rpi_drivers)
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
+add_definitions(-DHAS_BCM2835) ## comment out this when not developing on RasperryPi.    
 
 option(HAS_BCM2835 "has bcm2835" ON)
 
