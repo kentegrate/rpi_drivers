@@ -21,7 +21,7 @@ void frequencyCB(std_msgs::Float32::ConstPtr freq){
 int main(int argc, char* argv[]){
 
   ros::init(argc, argv, "pca9685_node");
-  ros::NodeHandle nh;
+  ros::NodeHandle nh("~");
   ros::Subscriber freq_sub = nh.subscribe("frequency", 1, frequencyCB);
   std::vector<ros::Subscriber> pwm_subs;
 
@@ -32,22 +32,32 @@ int main(int argc, char* argv[]){
 
   int address;
   nh.param("address", address, 0x55);
-  pca9685.initialize(address);
-  
+  pca9685.initialize(0x55);
+  if(pca9685.testConnection()){
+    std::cout<< "true" << std::endl;
+  }
+  else{
+    std::cout<< "false" << std::endl;
+  }
   int frequency;
   nh.param("frequency", frequency, 1200);
-  pca9685.setFrequency(frequency);
+  pca9685.setFrequency(60);
 
   int enable_pin;
   nh.param("enable_pin", enable_pin, 27);
-  pca9685.enableOutput(enable_pin);
+  //  pca9685.enableOutput(27);
 
-  for(int i = 0; i < 16; i++){
-    pca9685.setPWM(i, 0);
+  ros::Rate rate(100);
+  while(ros::ok()){
+    ros::spinOnce();
+    rate.sleep();
+    for(int i = 0; i < 16; i++){
+      pca9685.setPWMmS(i, 100);
+    }
+
+
   }
-
-  ros::spin();
-
   pca9685.finalize(enable_pin);
+
   return 0;
 }

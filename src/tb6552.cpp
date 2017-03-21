@@ -1,6 +1,7 @@
 #include <rpi_drivers/tb6552.hpp>
 #include <bcm2835.h>
 void TB6552Impl::initialize(int in1_pin, int in2_pin, int stby_pin, int pwm_channel){
+  bcm2835_init();
   this->in1_pin = in1_pin;
   this->in2_pin = in2_pin;
   this->stby_pin = stby_pin;

@@ -32,7 +32,7 @@ void velocityCB(std_msgs::Float32::ConstPtr velocity){
 
 int main(int argc, char* argv[]){
   ros::init(argc, argv, "tb6552_node");
-  ros::NodeHandle nh;
+  ros::NodeHandle nh("~");
   int in1_pin, in2_pin, stby_pin, pwm_channel;
   std::string pwm_ns;
   nh.param("in1_pin", in1_pin, 13);
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
   nh.param("pwm_channel", pwm_channel, 0);
   nh.param<std::string>("pwm_ns", pwm_ns, "pwm");
 
-  pwm_pub = nh.advertise<std_msgs::UInt16> (pwm_ns + "/channel/" + std::to_string(pwm_channel), 10);
+  pwm_pub = nh.advertise<std_msgs::UInt16> ("/" + pwm_ns + "/channel/" + std::to_string(pwm_channel), 10);
   
   ros::Subscriber velocity_sub = nh.subscribe("channel/" + std::to_string(pwm_channel), 10, velocityCB);
     

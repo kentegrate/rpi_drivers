@@ -91,7 +91,7 @@ void PCA9685Impl::initialize(int address) {
     }
 
   bcm2835_i2c_setSlaveAddress(address);
-  uint16_t clk_div = BCM2835_I2C_CLOCK_DIVIDER_626;
+  uint16_t clk_div = BCM2835_I2C_CLOCK_DIVIDER_2500;
   bcm2835_i2c_setClockDivider(clk_div);
 
 
