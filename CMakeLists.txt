@@ -34,6 +34,9 @@ if(HAS_BCM2835)
   add_library(pca9685_driver src/pca9685.cpp)
   target_link_libraries(pca9685_driver bcm2835)
 
+  add_library(ada_pca9685_driver src/pca9685.cpp)
+  target_link_libraries(ada_pca9685_driver bcm2835)
+
   add_library(ms5611_driver src/ms5611.cpp)
   target_link_libraries(ms5611_driver bcm2835)
 
@@ -63,6 +66,10 @@ add_executable(pca9685_node src/pca9685_node.cpp)
 target_link_libraries(pca9685_node ${catkin_LIBRARIES})
 add_dependencies(pca9685_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_executable(ada_pca9685_node src/ada_pca9685_node.cpp)
+target_link_libraries(pada_ca9685_node ${catkin_LIBRARIES})
+add_dependencies(ada_pca9685_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 add_executable(tb6552_node src/tb6552_node.cpp)
 target_link_libraries(tb6552_node ${catkin_LIBRARIES})
 add_dependencies(tb6552_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -73,6 +80,7 @@ if(HAS_BCM2835)
 #  target_link_libraries(ads1115_node ads1115_driver)  
 #  target_link_libraries(ms5611_node ms5611_driver)
   target_link_libraries(pca9685_node pca9685_driver)
+  target_link_libraries(ada_pca9685_node ada_pca9685_driver)
   target_link_libraries(tb6552_node tb6552_driver)
 else(HAS_BCM2835)
 #  target_link_libraries(mpu9250_node gmock pthread)

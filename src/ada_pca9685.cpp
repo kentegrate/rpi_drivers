@@ -1,4 +1,4 @@
-#include <rpi_drivers/ada_pca9685.h>
+#include <rpi_drivers/ada_pca9685.hpp>
 Ada_ServoDriver::Ada_ServoDriver()
 {
 }
