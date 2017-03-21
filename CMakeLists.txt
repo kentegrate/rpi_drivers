@@ -34,7 +34,7 @@ if(HAS_BCM2835)
   add_library(pca9685_driver src/pca9685.cpp)
   target_link_libraries(pca9685_driver bcm2835)
 
-  add_library(ada_pca9685_driver src/pca9685.cpp)
+  add_library(ada_pca9685_driver src/ada_pca9685.cpp)
   target_link_libraries(ada_pca9685_driver bcm2835)
 
   add_library(ms5611_driver src/ms5611.cpp)
@@ -67,7 +67,7 @@ target_link_libraries(pca9685_node ${catkin_LIBRARIES})
 add_dependencies(pca9685_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(ada_pca9685_node src/ada_pca9685_node.cpp)
-target_link_libraries(pada_ca9685_node ${catkin_LIBRARIES})
+target_link_libraries(ada_pca9685_node ${catkin_LIBRARIES})
 add_dependencies(ada_pca9685_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(tb6552_node src/tb6552_node.cpp)

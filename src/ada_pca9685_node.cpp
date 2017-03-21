@@ -28,19 +28,10 @@ int main(int argc, char* argv[]){
   int address;
   nh.param("address", address, 0x55);
   pca9685.init();
-
-
-
-  ros::Rate rate(100);
-  while(ros::ok()){
-    ros::spinOnce();
-    rate.sleep();
-    for(int i = 0; i < 16; i++){
-      pca9685.setPWM(i, 0, 1000);
-    }
-
-
-  }
-
+  pca9685.reset();
+  usleep(100000);
+  pca9685.setPWMFreq(600);
+  
+  ros::spin();
   return 0;
 }

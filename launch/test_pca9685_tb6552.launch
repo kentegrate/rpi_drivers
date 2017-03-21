@@ -1,5 +1,5 @@
 <launch>
-	<node name="pwm" pkg="rpi_drivers" type="pca9685_node">
+	<node name="pwm" pkg="rpi_drivers" type="ada_pca9685_node">
 	      <param name="address" value="85" type="int"/>
 	      <param name="frequency" value="1000" type="int"/>
 	      <param name="enable_pin" value="27" type="int"/>
