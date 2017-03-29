@@ -12,6 +12,7 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  sensor_msgs
 )
 
 
@@ -25,8 +26,8 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 ### Build libraries
 if(HAS_BCM2835)
-#  add_library(mpu9250_driver src/mpu9250.cpp)
-#  target_link_libraries(mpu9250_driver bcm2835)
+  add_library(mpu9250_driver src/mpu9250.cpp)
+  target_link_libraries(mpu9250_driver bcm2835)
 
 #  add_library(ads1115_driver src/ads1115.cpp)
 #  target_link_libraries(ads1115_driver bcm2835)
@@ -50,9 +51,9 @@ endif(HAS_BCM2835)
 
 
 ### Build executables
-#add_executable(mpu9250_node src/mpu9250_node.cpp)
-#target_link_libraries(mpu9250_node ${catkin_LIBRARIES})
-#add_dependencies(mpu9250_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_executable(mpu9250_node src/mpu9250_node.cpp)
+target_link_libraries(mpu9250_node ${catkin_LIBRARIES})
+add_dependencies(mpu9250_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #add_executable(ads1115_node src/ads1115_node.cpp)
 #target_link_libraries(ads1115_node ${catkin_LIBRARIES})
@@ -76,14 +77,14 @@ add_dependencies(tb6552_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORT
 
 ### Linking 
 if(HAS_BCM2835)
-#  target_link_libraries(mpu9250_node mpu9250_driver)
+  target_link_libraries(mpu9250_node mpu9250_driver)
 #  target_link_libraries(ads1115_node ads1115_driver)  
 #  target_link_libraries(ms5611_node ms5611_driver)
   target_link_libraries(pca9685_node pca9685_driver)
   target_link_libraries(ada_pca9685_node ada_pca9685_driver)
   target_link_libraries(tb6552_node tb6552_driver)
 else(HAS_BCM2835)
-#  target_link_libraries(mpu9250_node gmock pthread)
+  target_link_libraries(mpu9250_node gmock pthread)
 #  target_link_libraries(ads1115_node gmock pthread) 
   target_link_libraries(ms5611_node gmock pthread)
   target_link_libraries(pca9685_node gmock pthread)
