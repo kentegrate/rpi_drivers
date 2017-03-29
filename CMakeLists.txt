@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rpi_drivers)
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
-add_definitions(-DHAS_BCM2835) ## comment out this when not developing on RasperryPi.    
 
-option(HAS_BCM2835 "has bcm2835" ON)
+option(HAS_BCM2835 "has bcm2835" OFF)
 
 if(HAS_BCM2835)
   add_definitions(-DHAS_BCM2835)
@@ -43,11 +42,12 @@ if(HAS_BCM2835)
 
   add_library(tb6552_driver src/tb6552.cpp)
   target_link_libraries(tb6552_driver bcm2835)
-else(HAS_BCM2835)
+
+else()
   set(GTEST_ROOT ~/Downloads/googletest-release-1.8.0/)
   include_directories(${GTEST_ROOT}/include/)
   link_directories(${GTEST_ROOT}/build/)
-endif(HAS_BCM2835)
+endif()
 
 
 ### Build executables
@@ -86,7 +86,7 @@ if(HAS_BCM2835)
 else(HAS_BCM2835)
   target_link_libraries(mpu9250_node gmock pthread)
 #  target_link_libraries(ads1115_node gmock pthread) 
-  target_link_libraries(ms5611_node gmock pthread)
+#  target_link_libraries(ms5611_node gmock pthread)
   target_link_libraries(pca9685_node gmock pthread)
   target_link_libraries(tb6552_node gmock pthread)
 endif(HAS_BCM2835)

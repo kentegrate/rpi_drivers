@@ -17,6 +17,6 @@ class MockTB6552 : public TB6552 {
       void());
   MOCK_METHOD0(wakeUp,
       void());
-  MOCK_METHOD1(getPWMChannel,
+  MOCK_METHOD0(getPWMChannel,
       int());
 };
