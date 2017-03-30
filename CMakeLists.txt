@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(rpi_drivers)
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 
-option(HAS_BCM2835 "has bcm2835" OFF)
+option(HAS_BCM2835 "has bcm2835" ON)
 
 if(HAS_BCM2835)
   add_definitions(-DHAS_BCM2835)
@@ -26,7 +26,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ### Build libraries
 if(HAS_BCM2835)
   add_library(mpu9250_driver src/mpu9250_i2c.cpp)
-  target_link_libraries(mpu9250_driver bcm2835)
+  target_link_libraries(mpu9250_driver wiringPi)
 
 #  add_library(ads1115_driver src/ads1115.cpp)
 #  target_link_libraries(ads1115_driver bcm2835)
@@ -51,7 +51,7 @@ endif()
 
 
 ### Build executables
-add_executable(mpu9250_node src/mpu9250_node.cpp)
+add_executable(mpu9250_node src/mpu9250_i2c_node.cpp)
 target_link_libraries(mpu9250_node ${catkin_LIBRARIES})
 add_dependencies(mpu9250_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 

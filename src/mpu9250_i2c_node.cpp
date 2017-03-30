@@ -3,8 +3,8 @@
 #include <sensor_msgs/MagneticField.h>
 
 #ifdef HAS_BCM2835
-  #include <rpi_drivers/mpu9250.hpp>
-  MPU9250Impl mpu;
+  #include <rpi_drivers/mpu9250_i2c.hpp>
+MPU9250 mpu(0x68);
 #else
   #include <rpi_drivers/mock_mpu9250.hpp>
   MockMPU9250 mpu;  
@@ -35,7 +35,7 @@ sensor_msgs::MagneticField createMagMsg(float *mag){
 int main(int argc, char* argv[]){
   ros::init(argc, argv, "mpu9250_node");
   ros::NodeHandle nh("~");
-  mpu.initialize(1, 0x01);
+  int beginStatus = mpu.begin(ACCEL_RANGE_4G,GYRO_RANGE_250DPS);
   float accel[3];
   float gyro[3];
   float mag[3];
@@ -43,11 +43,15 @@ int main(int argc, char* argv[]){
   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("data_raw", 10);
   ros::Publisher mag_pub = nh.advertise<sensor_msgs::MagneticField>("mag", 10);
   ros::Rate rate(100);
-
+  if(beginStatus < 0) {
+    fprintf(stderr, "IMU initialization unsuccessful\n");
+    fprintf(stderr, "Check IMU wiring or try cycling power\n");
+    return 0;
+  }
   while(ros::ok()){
     mpu.getMotion9(accel, accel + 1, accel + 2,
-		   gyro, gyro + 1, gyro + 2,
-		   mag, mag + 1, mag + 2);
+                   gyro, gyro + 1, gyro + 2,
+                   mag, mag + 1, mag + 2);
     imu_pub.publish(createImuMsg(accel, gyro));
     mag_pub.publish(createMagMsg(mag));
     

@@ -43,7 +43,8 @@ int main(int argc, char* argv[]){
   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("data_raw", 10);
   ros::Publisher mag_pub = nh.advertise<sensor_msgs::MagneticField>("mag", 10);
   ros::Rate rate(100);
-
+  std::cout << mpu.testConnection()<<std::endl;
+  
   while(ros::ok()){
     mpu.getMotion9(accel, accel + 1, accel + 2,
 		   gyro, gyro + 1, gyro + 2,
