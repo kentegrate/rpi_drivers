@@ -25,7 +25,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 ### Build libraries
 if(HAS_BCM2835)
-  add_library(mpu9250_driver src/mpu9250.cpp)
+  add_library(mpu9250_driver src/mpu9250_i2c.cpp)
   target_link_libraries(mpu9250_driver bcm2835)
 
 #  add_library(ads1115_driver src/ads1115.cpp)

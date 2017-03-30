@@ -3,8 +3,8 @@
 #include <sensor_msgs/MagneticField.h>
 
 #ifdef HAS_BCM2835
-  #include <rpi_drivers/mpu9250_i2c.hpp>
-  MPU9250I2C mpu;
+  #include <rpi_drivers/mpu9250.hpp>
+  MPU9250Impl mpu;
 #else
   #include <rpi_drivers/mock_mpu9250.hpp>
   MockMPU9250 mpu;  
@@ -53,7 +53,6 @@ int main(int argc, char* argv[]){
     
     rate.sleep();
   }
-  mpu.finalize();
   return 0;
 }
     

@@ -18,6 +18,9 @@ void velocityCB(std_msgs::Float32::ConstPtr velocity){
     tb6552.standBy();
     std_msgs::UInt16 pwm_msg;
     pwm_msg.data = velocity->data * 4096;
+    if(pwm_msg.data > 4096)
+      pwm_msg.data = 4096;
+
     pwm_pub.publish(pwm_msg);
     tb6552.turnForward();
   }
@@ -25,6 +28,8 @@ void velocityCB(std_msgs::Float32::ConstPtr velocity){
     tb6552.standBy();
     std_msgs::UInt16 pwm_msg;
     pwm_msg.data = velocity->data * -4096;
+    if(pwm_msg.data < -4096)
+      pwm_msg.data = -4096;
     pwm_pub.publish(pwm_msg);
     tb6552.turnBackward();
   }
@@ -43,7 +48,7 @@ int main(int argc, char* argv[]){
 
   pwm_pub = nh.advertise<std_msgs::UInt16> ("/" + pwm_ns + "/channel/" + std::to_string(pwm_channel), 10);
   
-  ros::Subscriber velocity_sub = nh.subscribe("channel/" + std::to_string(pwm_channel), 10, velocityCB);
+  ros::Subscriber velocity_sub = nh.subscribe("target_duty", 10, velocityCB);
     
   tb6552.initialize(in1_pin, in2_pin, stby_pin, pwm_channel);
   ros::spin();
