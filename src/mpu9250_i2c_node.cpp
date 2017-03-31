@@ -46,49 +46,23 @@ int main(int argc, char* argv[]){
   float gyro[3];
   float mag[3];
   
-  float accel_offset[3];
-  float gyro_offset[3];
-  float mag_offset[3];
-  for(int i = 0; i < 3; i++){
-    accel_offset[i] = 0;
-    gyro_offset[i] = 0;
-    mag_offset[i] = 0;
-  }
-
-  
   ros::Rate rate(100);
   
   
   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("data_raw", 10);
   ros::Publisher mag_pub = nh.advertise<sensor_msgs::MagneticField>("mag", 10);
 
-    for(int i = 0; i < 500; i++){
-        mpu.getMotion9(accel, accel + 1, accel + 2,
-		   gyro, gyro + 1, gyro + 2,
-		   mag, mag + 1, mag + 2);
-        rate.sleep();
-        for(int j = 0; j < 3; j++){
-          accel_offset[j] += accel[j];
-          gyro_offset[j] += gyro[j];
-          mag_offset[j] += mag[j];
-        }
-  }
-  for(int i = 0; i < 3; i++){
-    accel_offset[i] /= 500;
-    gyro_offset[i] /= 500;
-    mag_offset[i] /= 500;
-  }
-
   
   while(ros::ok()){
     mpu.getMotion9(accel, accel + 1, accel + 2,
                    gyro, gyro + 1, gyro + 2,
                    mag, mag + 1, mag + 2);
-    for(int i = 0; i < 3; i++){
-      accel[i] -= accel_offset[i];
-      gyro[i] -= gyro_offset[i];
-      mag[i] -= mag_offset[i];
-    }
+    accel[0] -= 0.0621438441;
+    accel[1] -= 0.0508886528;
+    gyro[0] -= -0.0246407;
+    gyro[1] -= -0.0429239;
+    gyro[2] -= -0.3335873;
+      
 
     imu_pub.publish(createImuMsg(accel, gyro));
     mag_pub.publish(createMagMsg(mag));
