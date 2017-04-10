@@ -4,18 +4,20 @@
 	      <param name="frequency" value="1000" type="int"/>
 	      <param name="enable_pin" value="27" type="int"/>
         </node>
-	<node name="motor_1" pkg="rpi_drivers" type="tb6552_node">
+	<node name="motor_2" pkg="rpi_drivers" type="tb6552_node">
 	      <param name="in1_pin" value="13" type="int"/>
 	      <param name="in2_pin" value="19" type="int"/>
 	      <param name="stby_pin" value="26" type="int"/>
 	      <param name="pwm_channel" value="0" type="int"/>
 	      <param name="pwm_ns" value="pwm" type="str"/>
+	      <param name="reverse" value="0" type="int"/>
 	</node>      
-	<node name="motor_2" pkg="rpi_drivers" type="tb6552_node">
+	<node name="motor_1" pkg="rpi_drivers" type="tb6552_node">
 	      <param name="in1_pin" value="10" type="int"/>
 	      <param name="in2_pin" value="9" type="int"/>
 	      <param name="stby_pin" value="25" type="int"/>
 	      <param name="pwm_channel" value="1" type="int"/>
 	      <param name="pwm_ns" value="pwm" type="str"/>
+	      <param name="reverse" value="1" type="int"/>
 	</node>      
 </launch>

@@ -9,7 +9,7 @@ TB6552Impl tb6552;
 MockTB6552 tb6552;
 #endif
 ros::Publisher pwm_pub;
-
+int reverse;
 void velocityCB(std_msgs::Float32::ConstPtr velocity){
   if(velocity->data == 0){
     tb6552.standBy();
@@ -22,7 +22,10 @@ void velocityCB(std_msgs::Float32::ConstPtr velocity){
       pwm_msg.data = 4096;
 
     pwm_pub.publish(pwm_msg);
-    tb6552.turnForward();
+    if(!reverse)
+      tb6552.turnForward();
+    else
+      tb6552.turnBackward();      
   }
   else{
     tb6552.standBy();
@@ -31,7 +34,12 @@ void velocityCB(std_msgs::Float32::ConstPtr velocity){
     if(pwm_msg.data < -4096)
       pwm_msg.data = -4096;
     pwm_pub.publish(pwm_msg);
-    tb6552.turnBackward();
+
+    if(!reverse)
+      tb6552.turnBackward();
+    else
+      tb6552.turnForward();      
+
   }
 }
 
@@ -44,6 +52,7 @@ int main(int argc, char* argv[]){
   nh.param("in2_pin", in2_pin, 19);
   nh.param("stby_pin", stby_pin, 26);
   nh.param("pwm_channel", pwm_channel, 0);
+  nh.param("reverse", reverse, 0);
   nh.param<std::string>("pwm_ns", pwm_ns, "pwm");
 
   pwm_pub = nh.advertise<std_msgs::UInt16> ("/" + pwm_ns + "/channel/" + std::to_string(pwm_channel), 10);
